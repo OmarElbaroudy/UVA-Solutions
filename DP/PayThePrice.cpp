@@ -28,22 +28,22 @@ int n, l, r;
 ll memo[310][310][310];
 
 ll dp(int sum, int c, int k) {
-    if (c < 0 || k > 300 || sum > n) return 0;
-    if (sum == n) return c == 0;
+    if (sum == 0 && c == 0) return 1;
+    if (c == 0 || k > 300 || sum < 0) return 0;
     ll &ans = memo[sum][c][k];
     if (ans != -1) return ans;
-    ans = dp(sum + k, c - 1, k) + dp(sum, c, k + 1);
+    ans = dp(sum - k, c - 1, k) + dp(sum, c, k + 1);
     return ans;
 }
 
 ll solve(int sum, int c, int k) {
-    if (c < 0 || sum > n) return 0;
-    if (sum == n) return c == 0;
+    if (c < 0 || sum < 0) return 0;
+    if (sum == 0) return c == 0;
     ll &ans = memo[sum][c][k];
     if (ans != -1) return ans;
     ans = 0;
     for (int i = k; i <= n; i++) {
-        ans += dp(sum + i, c - 1, i);
+        ans += solve(sum - i, c - 1, i);
     }
     return ans;
 }
@@ -51,15 +51,15 @@ ll solve(int sum, int c, int k) {
 int main() {
     faster;
     string line;
+    memset(memo, -1, sizeof(ll) * 310 * 310 * 310);
     while (getline(cin, line)) {
         stringstream ss = stringstream(line);
         ss >> n >> l >> r;
-        l = (l) ? l : 1, r = (r) ? r : n;
+        r = (r) ? r : 300;
         l = min(l, 300), r = min(r, 300);
-        memset(memo, -1, sizeof(memo));
         ll ans = 0;
         for (int i = l; i <= r; i++) {
-            ans += dp(0, i, 1);
+            ans += dp(n, i, 1);
         }
         cout << ans << endl;
     }
